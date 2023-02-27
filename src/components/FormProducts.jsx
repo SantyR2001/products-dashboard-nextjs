@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import { addProduct } from '@services/api/products';
 
 export default function FormProduct() {
   const formRef = useRef(null);
@@ -6,6 +7,7 @@ export default function FormProduct() {
   const handleSubmit = (event) => {
     event.preventDefault();
     const formData = new FormData(formRef.current);
+
     const data = {
       title: formData.get('title'),
       price: parseInt(formData.get('price')),
@@ -14,8 +16,13 @@ export default function FormProduct() {
       images: [formData.get('images').name],
     };
 
-    console.log(data);
+    addProduct(data)
+      .then((response) => console.log(response))
+      .catch((error) => {
+        throw error;
+      });
   };
+
   return (
     <form ref={formRef} onSubmit={handleSubmit}>
       <div className="overflow-hidden">
