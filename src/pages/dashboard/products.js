@@ -1,14 +1,32 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Fragment, useState } from 'react';
 import { PlusIcon } from '@heroicons/react/20/solid';
 import Modal from '@common/Modal';
 import FormProduct from '@components/FormProducts.jsx';
+import axios from 'axios';
+import endPoints from '@services/api';
+import useAlert from '@hooks/useAlert';
+import Alert from '@common/Alert';
 
 const products = () => {
   const [open, setOpen] = useState(false);
-  const [products, setProducts] = useState();
+  const [products, setProducts] = useState([]);
+  const { alert, setAlert, toggleAlert } = useAlert();
+  useEffect(() => {
+    async function getProducts() {
+      const response = await axios.get(endPoints.products.allProducts);
+      setProducts(response.data);
+    }
+    try {
+      getProducts();
+      console.log(products);
+    } catch (error) {
+      console.log(error);
+    }
+  }, [alert]);
   return (
     <>
+      <Alert alert={alert} handleClose={toggleAlert} />
       <div>
         <div class="lg:flex lg:items-center lg:justify-between">
           <div class="min-w-0 flex-1">
@@ -80,7 +98,7 @@ const products = () => {
                         </a>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <a href="/edit" className="text-indigo-600 hover:text-indigo-900">
+                        <a href="/edit" className="text-red-600 hover:text-red-900">
                           Delete
                         </a>
                       </td>
@@ -93,7 +111,7 @@ const products = () => {
         </div>
       </div>
       <Modal open={open} setOpen={setOpen}>
-        <FormProduct />
+        <FormProduct setOpen={setOpen} setAlert={setAlert} />
       </Modal>
     </>
   );
