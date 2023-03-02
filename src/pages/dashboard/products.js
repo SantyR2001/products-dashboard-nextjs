@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import defaultImage from '@assets/images/default-image.jpg';
 import { Fragment, useState } from 'react';
 import { PlusIcon } from '@heroicons/react/20/solid';
 import Modal from '@common/Modal';
@@ -78,7 +79,7 @@ const products = () => {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div className="flex-shrink-0 h-10 w-10">
-                            <img className="h-10 w-10 rounded-full" src={product.images[0]} alt="" />
+                            {product.images[0] ? <img className="h-10 w-10 rounded-full" src={product.images[0]} alt="" /> : <img className="h-10 w-10 rounded-full" src={defaultImage} alt="" />}
                           </div>
                           <div className="ml-4">
                             <div className="text-sm font-medium text-gray-900">{product.title}</div>
