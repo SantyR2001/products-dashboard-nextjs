@@ -1,13 +1,15 @@
 import React, { useEffect } from 'react';
 import defaultImage from '@assets/images/default-image.jpg';
-import { Fragment, useState } from 'react';
-import { PlusIcon } from '@heroicons/react/20/solid';
+import { useState } from 'react';
+import { PlusIcon, XCircleIcon } from '@heroicons/react/20/solid';
 import Modal from '@common/Modal';
 import FormProduct from '@components/FormProducts.jsx';
 import axios from 'axios';
 import endPoints from '@services/api';
 import useAlert from '@hooks/useAlert';
 import Alert from '@common/Alert';
+import { deleteProduct } from '@services/api/products';
+import Link from 'next/link';
 
 const products = () => {
   const [open, setOpen] = useState(false);
@@ -20,11 +22,40 @@ const products = () => {
     }
     try {
       getProducts();
-      console.log(products);
     } catch (error) {
       console.log(error);
     }
   }, [alert]);
+
+  function isImage(url) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(true);
+      img.onerror = () => reject(false);
+      img.src = url;
+    });
+  }
+
+  const handleDelete = async (id) => {
+    deleteProduct(id)
+      .then(() => {
+        setAlert({
+          active: true,
+          message: 'Delete Product successfully',
+          type: 'success',
+          autoClose: true,
+        });
+      })
+      .catch((error) =>
+        setAlert({
+          active: true,
+          message: error.message,
+          type: 'error',
+          autoClose: false,
+        })
+      );
+  };
+
   return (
     <>
       <Alert alert={alert} handleClose={toggleAlert} />
@@ -94,14 +125,17 @@ const products = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{product.id}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <a href="/edit" className="text-indigo-600 hover:text-indigo-900">
+                        <Link href={`/dashboard/edit/${product.id}`} className="text-indigo-600 hover:text-indigo-900">
                           Edit
-                        </a>
+                        </Link>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <a href="/edit" className="text-red-600 hover:text-red-900">
-                          Delete
-                        </a>
+                        <XCircleIcon
+                          className="flex-shrink-0 h-6 w-6 text-red-400 cursor-pointer"
+                          onClick={() => {
+                            handleDelete(product.id);
+                          }}
+                        />
                       </td>
                     </tr>
                   ))}
